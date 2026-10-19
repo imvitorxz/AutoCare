@@ -1,98 +1,129 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import { ScrollView, View, Text, StyleSheet, Pressable } from "react-native";
+import { useRouter } from "expo-router";
+import AppHeader from "@/components/AppHeader";
+import { colors } from "@/constants/theme";
 
 export default function HomeScreen() {
+  const router = useRouter();
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    <View style={styles.container}>
+      <AppHeader />
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.greeting}>Olá! 👋</Text>
+        <Text style={styles.title}>Bem-vindo ao AutoCare</Text>
+        <Text style={styles.description}>
+          Cuide do seu veículo e mantenha tudo organizado em um só lugar.
+        </Text>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>🚗 Seus veículos</Text>
+          <Text style={styles.cardDescription}>
+            Cadastre seus veículos e consulte as informações sempre que precisar.
+          </Text>
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+          <Pressable
+            style={styles.button}
+            onPress={() => router.push("/vehicles")}
+          >
+            <Text style={styles.buttonText}>Gerenciar veículos</Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>🔧 Manutenções</Text>
+          <Text style={styles.cardDescription}>
+            Organize o histórico de revisões, reparos e outros serviços.
+          </Text>
+
+          <Pressable
+            style={styles.button}
+            onPress={() => router.push("/maintenance")}
+          >
+            <Text style={styles.buttonText}>Ver manutenções</Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.infoBox}>
+          <Text style={styles.infoTitle}>Seu veículo. Seu histórico.</Text>
+          <Text style={styles.infoDescription}>
+            Mais organização e controle para cuidar do seu carro.
+          </Text>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+    backgroundColor: colors.background,
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+  content: {
+    padding: 20,
+    paddingBottom: 35,
+    gap: 18,
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+  greeting: {
+    fontSize: 16,
+    color: colors.muted,
   },
   title: {
-    textAlign: 'center',
+    fontSize: 25,
+    fontWeight: "800",
+    color: colors.dark,
   },
-  code: {
-    textTransform: 'uppercase',
+  description: {
+    fontSize: 15,
+    color: colors.muted,
+    lineHeight: 22,
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  card: {
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 16,
+    padding: 20,
+    gap: 12,
+  },
+  cardTitle: {
+    fontSize: 19,
+    fontWeight: "700",
+    color: colors.dark,
+  },
+  cardDescription: {
+    fontSize: 14,
+    lineHeight: 21,
+    color: colors.muted,
+  },
+  button: {
+    backgroundColor: colors.green,
+    paddingVertical: 13,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  infoBox: {
+    backgroundColor: colors.dark,
+    borderRadius: 16,
+    padding: 20,
+    gap: 8,
+  },
+  infoTitle: {
+    fontSize: 17,
+    fontWeight: "700",
+    color: colors.green,
+  },
+  infoDescription: {
+    fontSize: 14,
+    lineHeight: 21,
+    color: "#FFFFFF",
   },
 });

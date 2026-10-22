@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   Platform,
   ActivityIndicator,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { useRouter } from "expo-router";
 import AppHeader from "@/components/AppHeader";
@@ -20,8 +21,13 @@ import {
   type Vehicle,
 } from "@/services/vehiclesStorage";
 
+const VEHICLES_STORAGE_KEY = "@autocare:vehicles";
+const MAINTENANCE_STORAGE_KEY = "@autocare:maintenances";
+
 export default function VehiclesScreen() {
   const router = useRouter();
+  const scrollViewRef = useRef<ScrollView>(null);
+  const formY = useRef(0);
 
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [veiculo, setVeiculo] = useState("");
@@ -135,6 +141,12 @@ export default function VehiclesScreen() {
     setVeiculo(vehicle.veiculo);
     setPlaca(vehicle.placa);
     setKm(vehicle.km);
+    requestAnimationFrame(() => {
+      scrollViewRef.current?.scrollTo({
+        y: Math.max(formY.current - 12, 0),
+        animated: true,
+      });
+    });
   }
 
   async function deleteVehicle(id: string) {
@@ -152,7 +164,20 @@ export default function VehiclesScreen() {
       setSaving(true);
 
       try {
-        await saveVehicles(updatedVehicles);
+        const savedMaintenances = await AsyncStorage.getItem(
+          MAINTENANCE_STORAGE_KEY
+        );
+        const maintenances = savedMaintenances
+          ? (JSON.parse(savedMaintenances) as { vehicleId: string }[])
+          : [];
+        const updatedMaintenances = maintenances.filter(
+          (maintenance) => maintenance.vehicleId !== id
+        );
+
+        await AsyncStorage.multiSet([
+          [VEHICLES_STORAGE_KEY, JSON.stringify(updatedVehicles)],
+          [MAINTENANCE_STORAGE_KEY, JSON.stringify(updatedMaintenances)],
+        ]);
 
         setVehicles(updatedVehicles);
 
@@ -160,9 +185,14 @@ export default function VehiclesScreen() {
           clearForm();
         }
 
-        notify("Veículo excluído com sucesso!");
-      } catch {
-        notify("Não foi possível excluir o veículo.");
+        notify(
+          updatedMaintenances.length < maintenances.length
+            ? "Veículo e manutenções associadas excluídos com sucesso!"
+            : "Veículo excluído com sucesso!"
+        );
+      } catch (error) {
+        console.error("Erro ao excluir veículo e manutenções:", error);
+        notify("Não foi possível excluir o veículo. Tente novamente.");
       } finally {
         setSaving(false);
       }
@@ -202,6 +232,7 @@ export default function VehiclesScreen() {
       <AppHeader title="Gerencie seus veículos" />
 
       <ScrollView
+        ref={scrollViewRef}
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
@@ -218,7 +249,12 @@ export default function VehiclesScreen() {
           Cadastre seus veículos e mantenha os dados organizados.
         </Text>
 
-        <View style={styles.form}>
+        <View
+          style={styles.form}
+          onLayout={(event) => {
+            formY.current = event.nativeEvent.layout.y;
+          }}
+        >
           <Text style={styles.formTitle}>
             {editingId ? "Editar veículo" : "Cadastrar veículo"}
           </Text>

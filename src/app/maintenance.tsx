@@ -1,5 +1,5 @@
 import { useFocusEffect } from "expo-router";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -37,6 +37,8 @@ const STORAGE_KEY = "@autocare:maintenances";
 
 export default function MaintenanceScreen() {
   const router = useRouter();
+  const scrollViewRef = useRef<ScrollView>(null);
+  const formY = useRef(0);
 
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [maintenances, setMaintenances] = useState<Maintenance[]>([]);
@@ -244,6 +246,12 @@ export default function MaintenanceScreen() {
     setValor(item.valor.replace(".", ","));
     setObservacoes(item.observacoes);
     setDropdownOpen(false);
+    requestAnimationFrame(() => {
+      scrollViewRef.current?.scrollTo({
+        y: Math.max(formY.current - 12, 0),
+        animated: true,
+      });
+    });
   }
 
   async function deleteMaintenance(id: string) {
@@ -299,6 +307,7 @@ export default function MaintenanceScreen() {
       <AppHeader title="Histórico de manutenções" />
 
       <ScrollView
+        ref={scrollViewRef}
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
@@ -315,7 +324,12 @@ export default function MaintenanceScreen() {
           Registre revisões, trocas de óleo e reparos dos seus veículos.
         </Text>
 
-        <View style={styles.form}>
+        <View
+          style={styles.form}
+          onLayout={(event) => {
+            formY.current = event.nativeEvent.layout.y;
+          }}
+        >
           <Text style={styles.formTitle}>
             {editingId ? "Editar manutenção" : "Registrar manutenção"}
           </Text>

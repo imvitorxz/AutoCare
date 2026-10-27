@@ -85,5 +85,14 @@ A proposta é permitir a execução em Android e iOS a partir do mesmo projeto, 
 - O projeto rodará, e no terminal vai aparecer um QR Code, basta você escanear com o leitor do Expo Go (se os dois dispositivos estiverem conectados na mesma rede é provável que já aparecerá o projeto, mas por segurança escaneie o código)
 - Dentro do celular, teste o aplicativo e as 4 operações
 
+# Aviso de vulnerabilidade
+A auditoria de dependências (npm audit) identificou uma vulnerabilidade na biblioteca Zod, relacionada ao possível esgotamento de memória durante a validação de coleções com restrições e entradas excessivamente grandes.
+
+A versão instalada no momento da identificação é 3.25.76. O Expo CLI utilizado pelo projeto declara dependência da linha Zod 3.x.
+
+A correção indicada pelo alerta requer Zod 4.6.6 ou superior. Entretanto, essa versão não atende à faixa de dependências declarada pelo Expo CLI atualmente utilizado.
+
+Por esse motivo, não foi aplicada uma atualização forçada, nem realizado downgrade do Expo, para evitar incompatibilidades que possam comprometer o funcionamento do projeto.
+
 # 📞 Do suporte
 O autor se coloca à disposição para eventuais erros, problemas, bugs ou suporte necessário sobre o aplicativo, por meio de mensagens no AVA ou pelo e-mail vitor.colombelli@sempreceub.com

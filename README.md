@@ -72,11 +72,11 @@ A proposta é permitir a execução em Android e iOS a partir do mesmo projeto, 
 ## Dentro do projeto zipado
 - Abra a pasta do projeto no VSCode
 - Abra o terminal e execute: npm install (baixar o Node.js ([clique aqui](https://nodejs.org/en/download)) caso ainda não possua)
-- Após baixar as dependências, confira a versão do expo com npm list expo. (OBS: é necessário que a versão major [57] esteja no mesmo que a versão do Expo Go baixado no seu celular)
+- Após baixar as dependências, confira a versão do expo com npm list expo. (OBS: é necessário que a versão major [58] esteja no mesmo que a versão do Expo Go baixado no seu celular)
 
 ## No seu celular Android ou iOS
 - Vá até [o site do expo](https://expo.dev/go)
-- Em SDK Version, selecione a mesma que você baixou no projeto (no desenvolvimento do projeto foi utilizada a versão 57.0.0). Detalhe: se você atualizar a versão do expo no projeto pode quebrar dependências, então utilize a versão 57 do SDK.
+- Em SDK Version, selecione a mesma que você baixou no projeto (no desenvolvimento do projeto foi utilizada a versão 58.0.0). Detalhe: se você atualizar a versão do expo no projeto pode quebrar dependências, então utilize a versão 58 do SDK.
 - Baixe o aplicativo e aguarde a instalação
 
 ## No terminal do projeto
